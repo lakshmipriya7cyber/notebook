@@ -1,40 +1,100 @@
-# Jupyter Notebook Documentation
+# Sample Health Mirror 360 program
 
-Welcome to the **Jupyter Notebook** documentation site. **Jupyter Notebook**
-is a simplified notebook authoring application, and is a part of [Project
-Jupyter](https://docs.jupyter.org/en/latest/), a large umbrella project
-centered around the goal of providing tools (and [standards](https://docs.jupyter.org/en/latest/#sub-project-documentation))
-for interactive computing with [computational notebooks](https://docs.jupyter.org/en/latest/#what-is-a-notebook).
+def calculate_health_score(data):
+    """
+    Calculate health score out of 100 based on lifestyle data.
+    Simple weighted scoring for demo purposes.
+    """
+    score = 0
+    
+    # Sleep: ideal 7-9 hours
+    if 7 <= data['sleep_hours'] <= 9:
+        score += 30
+    elif 5 <= data['sleep_hours'] < 7 or 9 < data['sleep_hours'] <= 10:
+        score += 20
+    else:
+        score += 10
+    
+    # Steps: ideal 7000+
+    if data['steps_walked'] >= 7000:
+        score += 30
+    elif 4000 <= data['steps_walked'] < 7000:
+        score += 20
+    else:
+        score += 10
+    
+    # Water intake (liters): ideal 2-3 liters
+    if 2 <= data['water_intake'] <= 3:
+        score += 30
+    elif 1.5 <= data['water_intake'] < 2 or 3 < data['water_intake'] <= 3.5:
+        score += 20
+    else:
+        score += 10
+    
+    # Diet notes simple check for "healthy" keyword
+    if 'healthy' in data['diet_notes'].lower():
+        score += 10
+    else:
+        score += 5
+    
+    # Normalize score to 100 max (max could be 100+10)
+    if score > 100:
+        score = 100
+    
+    return score
 
-A [computational notebook](https://docs.jupyter.org/en/latest/#what-is-a-notebook)
-is a shareable document that combines computer
-code, plain language descriptions, data, rich visualizations like 3D models,
-charts, graphs and figures, and interactive controls. A notebook, along with
-an editor like **Jupyter Notebook**, provides a fast interactive environment for
-prototyping and explaining code, exploring and visualizing data, and sharing
-ideas with others.
+def generate_tips(data):
+    """
+    Generate 1-3 tips based on user's lifestyle data.
+    """
+    tips = []
+    
+    if data['sleep_hours'] < 7:
+        tips.append("Try to sleep more hours")
+    elif data['sleep_hours'] > 9:
+        tips.append("Avoid oversleeping")
+    
+    if data['steps_walked'] < 7000:
+        tips.append("Walk extra steps today")
+    
+    if data['water_intake'] < 2:
+        tips.append("Drink more water")
+    
+    if 'healthy' not in data['diet_notes'].lower():
+        tips.append("Include more healthy foods")
+    
+    # Return up to 3 tips
+    return tips[:3]
 
-**Jupyter Notebook** is a sibling to other notebook authoring applications under
-the Project Jupyter umbrella, like [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/)
-and [Jupyter Desktop](https://github.com/jupyterlab/jupyterlab-desktop).
-Jupyter Notebook offers a lightweight, simplified experience compared to JupyterLab.
+def color_code(score):
+    """
+    Return color code string based on score.
+    """
+    if score >= 75:
+        return "Green (Good)"
+    elif score >= 50:
+        return "Yellow (Average)"
+    else:
+        return "Red (Needs Improvement)"
 
-Read more about how to use **Jupyter Notebook** on this site, in the [User
-Documentation](notebook.md).
+def main():
+    # Sample user input data
+    user_data = {
+        'sleep_hours': float(input("Enter sleep hours last night: ")),
+        'steps_walked': int(input("Enter steps walked today: ")),
+        'water_intake': float(input("Enter water intake (liters): ")),
+        'diet_notes': input("Enter any notes about your diet: "),
+    }
+    
+    score = calculate_health_score(user_data)
+    tips = generate_tips(user_data)
+    color = color_code(score)
+    
+    # Output
+    tips_text = ", ".join(tips) if tips else "Keep up the good work!"
+    print(f"\nDaily Health Score: {score} ({color})")
+    print(f"Tips: {tips_text}")
 
-```{image} ./_static/images/notebook-running-code.png
-
-```
-
-- [Installation](https://jupyter.readthedocs.io/en/latest/install.html)
-- [Starting the Notebook](https://jupyter.readthedocs.io/en/latest/running.html)
-
-```{toctree}
-:maxdepth: 2
-
-user-documentation
-configuration
-migrate_to_notebook7
-contributor
-changelog
-```
+if name == "main":
+    main()
+    
